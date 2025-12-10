@@ -10,6 +10,7 @@ const app = express();
 // ✅ Middleware BEFORE routes
 app.use(cors({
   origin: "http://localhost:5173",
+  origin:"https://hrms-app-all-824x-frnqv7u6y-mohan-raja-ram-rks-projects.vercel.app",
   credentials: true
 }));
 app.use(express.json());
