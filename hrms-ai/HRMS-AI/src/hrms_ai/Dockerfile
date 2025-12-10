@@ -1,19 +1,20 @@
 FROM python:3.9-slim
 
-# Set the working directory inside the container
+# Set the working directory
 WORKDIR /app
 
-# Copy dependency file and install
+# Copy the requirements file
 COPY requirements.txt .
+
+# Install the dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy everything from this folder into the container
-# (since Dockerfile is in src/hrms_ai, this copies your whole app)
-COPY . .
+# Copy the application code
+COPY src/ hrms_ai/ /app/hrms_ai/
+COPY src/scripts/manage.py /app/scripts/manage.py
 
-# Expose the port your app will listen on
+# Expose the application port (if applicable)
 EXPOSE 8000
 
-# Run the application
-# main.py is in the same folder as the Dockerfile now
-CMD ["python", "main.py"]
+# Command to run the application
+CMD ["python", "hrms_ai/main.py"]                     
