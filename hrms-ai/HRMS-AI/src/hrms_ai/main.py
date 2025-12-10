@@ -9,7 +9,6 @@ from .extractor import extract_resume_fields
 class EducationItem(BaseModel):
     line: str
 
-
 class ResumeResponse(BaseModel):
     full_name: Optional[str]
     email: Optional[str]
@@ -27,18 +26,24 @@ app = FastAPI(
     version="1.0.0",
 )
 
-# Enable CORS for local/frontend testing
+# 🔥 Updated CORS configuration (production-ready)
+origins = [
+    "http://localhost:5173",                         # Local dev frontend
+    "https://hrms-app-all-ttsm.vercel.app",          # Live Vercel frontend
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # tighten for production
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-
 @app.get("/ocr/extract", response_model=ResumeResponse)
-def parse_resume(filename: str = Query(..., description="Name of the resume PDF (e.g., candidate.pdf)")):
+def parse_resume(
+    filename: str = Query(..., description="Name of the resume PDF (e.g., candidate.pdf)")
+):
     print("Resume parsed:", ASSET_DIR, filename)
     file_path = os.path.join(ASSET_DIR, filename)
     print("Resume parsed:", file_path)
