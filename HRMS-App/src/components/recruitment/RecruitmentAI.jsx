@@ -58,47 +58,49 @@ const RecruitmentAI = () => {
   };
 
   // === MAIN OCR CALL ===
-  const handleEvaluateCandidate = async () => {
-    if (!selectedCandidate || !selectedCandidate.resumeFilename) return;
+  const OCR_API_BASE_URL =
+  import.meta.env.VITE_OCR_API_URL || "http://127.0.0.1:8000";
 
-    setEvaluating(true);
-    setEvaluationResult(null);
-    setShowRawText(false);
+const handleEvaluateCandidate = async () => {
+  if (!selectedCandidate || !selectedCandidate.resumeFilename) return;
 
-    try {
-      const filename = encodeURIComponent(selectedCandidate.resumeFilename);
+  setEvaluating(true);
+  setEvaluationResult(null);
+  setShowRawText(false);
 
-      // matches what you tested in the browser:
-      // 127.0.0.1:8000/ocr/extract?filename=john_doe.pdf
-      const res = await fetch(
-        `http://127.0.0.1:8000/ocr/extract?filename=${filename}`,
-        {
-          method: "GET",
-        }
-      );
+  try {
+    const filename = encodeURIComponent(selectedCandidate.resumeFilename);
 
-      if (!res.ok) {
-        let msg = `OCR API error (${res.status})`;
-        try {
-          const errData = await res.json();
-          if (errData?.detail) msg = errData.detail;
-        } catch (_) {}
-        throw new Error(msg);
+    const res = await fetch(
+      `${OCR_API_BASE_URL}/ocr/extract?filename=${filename}`,
+      {
+        method: "GET",
       }
+    );
 
-      const data = await res.json();
-      setEvaluationResult(data);
-    } catch (err) {
-      console.error("OCR API error:", err);
-      setEvaluationResult({
-        error:
-          err.message ||
-          "Failed to evaluate resume. Please check that the OCR service is running.",
-      });
-    } finally {
-      setEvaluating(false);
+    if (!res.ok) {
+      let msg = `OCR API error (${res.status})`;
+      try {
+        const errData = await res.json();
+        if (errData?.detail) msg = errData.detail;
+      } catch (_) {}
+      throw new Error(msg);
     }
-  };
+
+    const data = await res.json();
+    setEvaluationResult(data);
+  } catch (err) {
+    console.error("OCR API error:", err);
+    setEvaluationResult({
+      error:
+        err.message ||
+        "Failed to evaluate resume. Please check that the OCR service is running.",
+    });
+  } finally {
+    setEvaluating(false);
+  }
+};
+
 
   const renderResumeScreening = () => (
     <div style={{ display: "flex", gap: "1rem" }}>
