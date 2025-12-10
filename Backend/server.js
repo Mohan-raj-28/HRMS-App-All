@@ -3,20 +3,41 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 require("dotenv").config();
 
-
 // ✅ Create app FIRST
 const app = express();
 
-// ✅ Middleware BEFORE routes
-app.use(cors({
-  origin: [
-      "http://localhost:5173", // local dev
-      "https://hrms-app-all-824x-frnqv7u6y-mohan-raja-ram-rks-projects.vercel.app", // Vercel prod
-    ],
-  credentials: true
-}));
-app.use(express.json());
+// ✅ CORS configuration (supports localhost + any Vercel URL)
+const allowedOrigins = [
+  "http://localhost:5173", // local dev
+];
 
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      // Allow server-to-server or tools with no Origin header
+      if (!origin) {
+        return callback(null, true);
+      }
+
+      // Explicitly allowed origins
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      // Allow any Vercel deployment (preview or production)
+      if (origin.endsWith(".vercel.app")) {
+        return callback(null, true);
+      }
+
+      console.warn("❌ Blocked by CORS:", origin);
+      return callback(new Error("Not allowed by CORS"));
+    },
+    credentials: true,
+  })
+);
+
+// ✅ JSON body parser
+app.use(express.json());
 
 // ✅ Health check route
 app.get("/health", (req, res) => {
@@ -69,7 +90,8 @@ app.use((req, res) => {
 const PORT = process.env.PORT || 8200;
 app.listen(PORT, () => {
   console.log(`✅ Server running on http://localhost:${PORT}`);
-  console.log(`🔗 Frontend URL: http://localhost:5173`);
+  console.log(`🔗 Local frontend: http://localhost:5173`);
+  console.log(`🌐 Vercel frontends allowed: *.vercel.app`);
 });
 
 module.exports = app;
