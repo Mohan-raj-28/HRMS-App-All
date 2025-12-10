@@ -1,20 +1,20 @@
 FROM python:3.9-slim
 
-# Set the working directory
+# Set the working directory inside the container
 WORKDIR /app
 
-# Copy the requirements file
+# Copy dependency file and install
 COPY requirements.txt .
-
-# Install the dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the application code
-COPY src/ hrms_ai/ /app/hrms_ai/
-COPY src/scripts/manage.py /app/scripts/manage.py
+# Copy this code as a package named "hrms_ai"
+COPY . /app/hrms_ai
 
-# Expose the application port (if applicable)
+# Ensure Python can see /app as a package root
+ENV PYTHONPATH=/app
+
+# Expose the port your app will listen on
 EXPOSE 8000
 
-# Command to run the application
-CMD ["python", "hrms_ai/main.py"]                     
+# Run the application as a package, so relative imports work
+CMD ["python", "-m", "hrms_ai.main"]
