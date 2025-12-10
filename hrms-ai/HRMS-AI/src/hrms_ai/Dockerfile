@@ -7,14 +7,15 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy this code as a package named "hrms_ai"
+# Copy this package into /app/hrms_ai
 COPY . /app/hrms_ai
 
-# Ensure Python can see /app as a package root
+# Make sure Python can find the package root
 ENV PYTHONPATH=/app
 
-# Expose the port your app will listen on
+# Expose the port (Render will inject PORT env var)
 EXPOSE 8000
 
-# Run the application as a package, so relative imports work
-CMD ["python", "-m", "hrms_ai.main"]
+# Start FastAPI app with uvicorn
+# hrms_ai.main:app  --> package.module:variable (your FastAPI instance)
+CMD ["sh", "-c", "uvicorn hrms_ai.main:app --host 0.0.0.0 --port ${PORT:-8000}"]
