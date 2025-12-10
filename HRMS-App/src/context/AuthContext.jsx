@@ -67,12 +67,13 @@ export const AuthProvider = ({ children }) => {
   };
 
   // ✅ Logout
-  const logout = () => {
+ const logout = () => {
   localStorage.removeItem("authToken");
   localStorage.removeItem("user");
   setUser(null);
-  window.location.href = "/login";
+  window.location.href = "/";   // 👈 change /login → /
 };
+
 
 
   const value = {
