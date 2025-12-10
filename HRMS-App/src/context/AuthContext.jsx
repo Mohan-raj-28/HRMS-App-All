@@ -67,18 +67,13 @@ export const AuthProvider = ({ children }) => {
   };
 
   // ✅ Logout
-  const logout = async () => {
-    try {
-      await api.post("/api/auth/logout");
-    } catch (err) {
-      console.error("Logout error:", err);
-    } finally {
-      localStorage.removeItem("authToken");
-      localStorage.removeItem("user");
-      setUser(null);
-      window.location.href = "/login";
-    }
-  };
+  const logout = () => {
+  localStorage.removeItem("authToken");
+  localStorage.removeItem("user");
+  setUser(null);
+  window.location.href = "/login";
+};
+
 
   const value = {
     user,              // Backend user object { id, email, role, scope }
